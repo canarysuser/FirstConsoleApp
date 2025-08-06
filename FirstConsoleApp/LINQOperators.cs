@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using static System.Console; 
+using static System.Console;
 
 namespace FirstConsoleApp
 {
@@ -20,7 +22,7 @@ namespace FirstConsoleApp
         };
 
         static string line = "".PadLeft(45, '=');
-        static int counter = 1; 
+        static int counter = 1;
         static void PrintList(IEnumerable<string> list, string header)
         {
             WriteLine(line);
@@ -37,17 +39,83 @@ namespace FirstConsoleApp
             //SortingQueries();
             //AggregationQueries();
             //GroupingQueries();
-            PartitionQueries();
-            ElementOperators();
+            // PartitionQueries();
+            //ElementOperators();
+            //LinqToDbEntities();
+            CustomExpressionTree();
         }
+        static void CustomExpressionTree()
+        {
+            IQueryable<string> queryableData = cities.AsQueryable();
+            //cities.Where(c=>c.ToLower()=="shimla" || c.Length>10);
+            ParameterExpression pe = Expression.Parameter(typeof(string), "c");
+            Expression left = Expression.Call(pe, typeof(string).GetMethod("ToLower", Type.EmptyTypes));
+            Expression right = Expression.Constant("shimla");
+            Expression e1 = Expression.Equal(left, right);
 
+            left = Expression.Property(pe, typeof(string).GetProperty("Length"));
+            right = Expression.Constant(10, typeof(int));
+            Expression e2 = Expression.GreaterThan(left, right);
+            Expression predicateBody = Expression.OrElse(e1, e2);
+            MethodCallExpression whereCallExpression = Expression.Call(
+                typeof(Queryable), "Where",
+                new Type[] { queryableData.ElementType },
+                queryableData.Expression,
+                Expression.Lambda<Func<string, bool>>(predicateBody, new ParameterExpression[] { pe }));
+
+            IQueryable<string> results = queryableData.Provider.CreateQuery<string>(whereCallExpression);
+            foreach (var result in results)
+            {
+                WriteLine(result);
+            }
+        }
+        static void LinqToDbEntities()
+        {
+            ProductDbContext db = new ProductDbContext();
+            var products = from product in db.Products
+                           select product;
+            var projection = from c in db.Products
+                             select new
+                             {
+                                 c.CategoryId,
+                                 c.ProductId,
+                                 c.ProductName
+                             };
+            var stockValue = db.Products.Sum(c => c.UnitPrice * c.UnitsInStock);
+            var categoryWise = from c in db.Products
+                               where c.CategoryId == 1 || c.CategoryId == 2
+                               select c;
+            var complex = db.Products
+                .OrderBy(c => c.UnitPrice)
+                .Where(c => c.ProductName.Contains("ai"))
+                .Select(c => c)
+                .Skip(5)
+                .Take(5);
+            /*db.Products.FromSqlRaw("exec sp_procedureName {0}, {1}", 10, 20);
+            db.Database.ExecuteSql("....");*/
+
+            products.ToList().ForEach(x => WriteLine(x));
+            WriteLine(line);
+            
+            WriteLine($"Stock Value: {stockValue}");
+            WriteLine(line);
+            
+            categoryWise.ToList().ForEach(x => WriteLine(x)); WriteLine(line);
+            
+            complex.ToList().ForEach (x => WriteLine(x));
+            WriteLine(line);
+
+           
+
+
+        }
         static void ElementOperators()
         {
             //First, Last, ElementAt(x).... 
-            var first = cities.First(); 
+            var first = cities.First();
             var last = cities.Last();
-            
-            var firstCondition = cities.First(c => c.Length == 18); 
+
+            var firstCondition = cities.First(c => c.Length == 18);
             var lastCondition = cities.Last(c => c.Length == 3);
             //can throw Exceptions when there are no matches. 
             //to avoid exceptions, use FirstOrDefault 
@@ -66,13 +134,13 @@ namespace FirstConsoleApp
         {
             //Take(5) - takes the first 5 values and skips the rest
             //Skip(5) -> skips the first 5 values and takes the rest 
-            var take5 = cities.Take( 5 );
-            var skip5 = cities.Skip( 5 );
+            var take5 = cities.Take(5);
+            var skip5 = cities.Skip(5);
             PrintList(take5, $"{counter++} Take 5");
             PrintList(skip5, $"{counter++} Skip 5");
-            var takeSkip = cities.Skip( 5 ).Take( 15 ).Skip( 4 ).Take( 2 );
+            var takeSkip = cities.Skip(5).Take(15).Skip(4).Take(2);
             PrintList(takeSkip, $"{counter++} Take Skip Combination");
-            
+
             var takeWhile = cities.TakeWhile(c => c.Contains("ga") || c.Contains("na"));
             var skipWhile = cities.SkipWhile(c => c.Length < 15);
             PrintList(takeWhile, $"{counter++} Take While ");
@@ -82,16 +150,16 @@ namespace FirstConsoleApp
         }
         static void GroupingQueries()
         {
-            var q1 = from c in cities 
-                     orderby c 
-                     group c by c[0] into g 
+            var q1 = from c in cities
+                     orderby c
+                     group c by c[0] into g
                      select g;
             foreach (var group in q1)
             {
-                PrintList(group.ToList(), $"{counter++} Key: {group.Key}" );
+                PrintList(group.ToList(), $"{counter++} Key: {group.Key}");
             }
             var q2 = cities
-                .OrderBy(c=>c.Length)
+                .OrderBy(c => c.Length)
                 .GroupBy(g => g.Length)
                 .Select(c => c);
             foreach (var group in q2)
@@ -101,11 +169,11 @@ namespace FirstConsoleApp
         }
         static void AggregationQueries()
         {
-            var count = cities.Count(); 
-            var sum = cities.Sum(c=>c.Length);
-            var min = cities.Min(c=>c.Length);
-            var max = cities.Max(c=>c.Length);
-            var avg = cities.Average(c=>c.Length);
+            var count = cities.Count();
+            var sum = cities.Sum(c => c.Length);
+            var min = cities.Min(c => c.Length);
+            var max = cities.Max(c => c.Length);
+            var avg = cities.Average(c => c.Length);
             WriteLine($"Count:{count}, Sum:{sum}, Min:{min}, Max:{max}, Avg: {avg}");
 
         }
@@ -113,11 +181,11 @@ namespace FirstConsoleApp
         {
             //OrderBy, ThenBy, OrderByDescending, ThenByDescending
             var q1 = from c in cities
-                     where c.Length> 8
+                     where c.Length > 8
                      orderby c[0] descending, c[1] ascending
                      select c;
             var q2 = cities
-                .Where(c=>c.Length> 8)
+                .Where(c => c.Length > 8)
                 .OrderBy(c => c[0])
                 .ThenByDescending(c => c[1])
                 .Select(c => c);
@@ -126,8 +194,8 @@ namespace FirstConsoleApp
         }
         static void RestrictionQueries()
         {
-            var q1 = from city in cities 
-                     where city.Length > 8 
+            var q1 = from city in cities
+                     where city.Length > 8
                      select city;
             PrintList(q1, $"{counter++} Where Length > 8");
             var q2 = cities
@@ -160,7 +228,7 @@ namespace FirstConsoleApp
                 Name = c,
                 StringLength = c.Length,
                 FirstLetter = c[0]
-            }); 
+            });
             printList(q2, $"{counter++} Projection Method Syntax");
 
         }
@@ -178,7 +246,7 @@ namespace FirstConsoleApp
             PrintList(q1, $"{counter++} Basic Query Query Syntax");
             //Method Syntax 
             var q2 = cities.Select(city => city);
-           // WriteLine(q2);
+            // WriteLine(q2);
             PrintList(q2, $"{counter++} Basic Query Method Syntax");
 
         }
