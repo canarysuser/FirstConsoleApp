@@ -38,7 +38,16 @@ namespace FirstConsoleApp
             result  = ad(100, 50);
             Console.WriteLine($"Result of multiple operations: {result}");
 
-
+            InvokeManually(ad);
+        }
+        static void InvokeManually(ArithmeticDelegate ad)
+        {
+            object result = 10; 
+            foreach(Delegate del in ad.GetInvocationList())
+            {
+                result = del.DynamicInvoke(Convert.ToInt32(result), 10)!; 
+                Console.WriteLine($"Result of {del.Method.Name}: {result}");
+            }
         }
     }
 }
