@@ -40,8 +40,8 @@
                 Console.WriteLine($"Power: {power}");
             }*/
 
-            WorkingWithDelegates2.Test();
-
+            //WorkingWithDelegates1.Test();
+            BuiltInDelegates.Test();
 
         }
         static IEnumerable<int> Power(int num, int multiplier)

@@ -33,12 +33,35 @@ namespace FirstConsoleApp
             ad += new ArithmeticDelegate(wd1.Subtract);
             ad+= new ArithmeticDelegate(Multiply);
             ad += wd1.Divide;
+            //Anonymous Method
+            ad += delegate (int x, int y)
+            {
+                Console.WriteLine($"Result from modulus: {result}");
+                return x % y;
+            };
+            //Multiply(10, 20); 
+            //Lambda expression
+            ad += (x, y) => 
+            {
+                Console.WriteLine($"Result from lambda: {x} + {y} = {x + y}");
+                return x + y;
+            };  //Statement lambda 
+            ad += (x, y) => x - y; //Expression lambda 
+            // Passing parameters 
+            // 1. Zero parameters:          => () => return
+            // 2. One parameter:            => x =>x | (x) => x 
+            // 3. Multiple parameters:      => (x, y) => x + y
+
+
 
             //step 5: Invoke the delegate with multiple methods
-            result  = ad(100, 50);
+            result = ad(100, 50);
             Console.WriteLine($"Result of multiple operations: {result}");
 
             InvokeManually(ad);
+
+
+
         }
         static void InvokeManually(ArithmeticDelegate ad)
         {
