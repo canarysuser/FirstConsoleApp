@@ -41,7 +41,8 @@
             }*/
 
             //WorkingWithDelegates1.Test();
-            BuiltInDelegates.Test();
+            //BuiltInDelegates.Test();
+            LINQOperators.Test();
 
         }
         static IEnumerable<int> Power(int num, int multiplier)
