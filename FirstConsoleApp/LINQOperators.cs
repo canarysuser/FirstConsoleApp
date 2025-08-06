@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using static System.Console; 
@@ -34,8 +35,50 @@ namespace FirstConsoleApp
             //ProjectionOperator(); 
             //RestrictionQueries();
             //SortingQueries();
-            AggregationQueries();
-            GroupingQueries();
+            //AggregationQueries();
+            //GroupingQueries();
+            PartitionQueries();
+            ElementOperators();
+        }
+
+        static void ElementOperators()
+        {
+            //First, Last, ElementAt(x).... 
+            var first = cities.First(); 
+            var last = cities.Last();
+            
+            var firstCondition = cities.First(c => c.Length == 18); 
+            var lastCondition = cities.Last(c => c.Length == 3);
+            //can throw Exceptions when there are no matches. 
+            //to avoid exceptions, use FirstOrDefault 
+            var firstCondition2 = cities.FirstOrDefault(c => c.Length == 18);
+            var lastCondition2 = cities.LastOrDefault(c => c.Length == 4);
+
+            WriteLine($"First: {first}, Last: {last}");
+            WriteLine($"FirstCondition: {firstCondition}, LastCondition: {lastCondition}");
+            WriteLine($"FirstCondition2: {firstCondition2}, LastCondition2: {lastCondition2}");
+
+
+        }
+
+
+        static void PartitionQueries()
+        {
+            //Take(5) - takes the first 5 values and skips the rest
+            //Skip(5) -> skips the first 5 values and takes the rest 
+            var take5 = cities.Take( 5 );
+            var skip5 = cities.Skip( 5 );
+            PrintList(take5, $"{counter++} Take 5");
+            PrintList(skip5, $"{counter++} Skip 5");
+            var takeSkip = cities.Skip( 5 ).Take( 15 ).Skip( 4 ).Take( 2 );
+            PrintList(takeSkip, $"{counter++} Take Skip Combination");
+            
+            var takeWhile = cities.TakeWhile(c => c.Contains("ga") || c.Contains("na"));
+            var skipWhile = cities.SkipWhile(c => c.Length < 15);
+            PrintList(takeWhile, $"{counter++} Take While ");
+            PrintList(skipWhile, $"{counter++} Skip While ");
+            var takeWhere = cities.Where(c => c.Contains("na")).Take(4);
+            PrintList(takeWhere, $"{counter++} Take Where ");
         }
         static void GroupingQueries()
         {
