@@ -20,7 +20,7 @@
     {
         static void Main(string[] args)
         {
-            Program program = new Program();
+            /*Program program = new Program();
             program.DoWork(); 
 
             string email = "someone@example.com";
@@ -38,21 +38,29 @@
             foreach (var power in Power(2, 10))
             {
                 Console.WriteLine($"Power: {power}");
-            }
+            }*/
+
+            WorkingWithDelegates1.Test();
+
+
         }
         static IEnumerable<int> Power(int num, int multiplier)
         {
+            //return Enumerable.Range(1, multiplier).ToList();
+
             int result = 1;
             for (int i = 0; i < multiplier; i++)
             {
                 result *= num;
-                if(result <  200)
+                if (result < 2000)
                     yield return result;
-                else
+               /* else
                 {
-                     yield break; // Stop yielding if the result exceeds 200
-                }
+                    yield break; // Stop yielding if the result exceeds 200
+                }*/
             }
+            yield return 100; 
+            yield return 200; // This will not be reached if the result exceeds 200
         }
 
         // Yielding functions cannot be anonymous or lambda functions.
