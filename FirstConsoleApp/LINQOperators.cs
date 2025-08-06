@@ -13,7 +13,7 @@ namespace FirstConsoleApp
         static List<string> cities = new List<string>()
         {
             "Bengaluru", "Chennai", "Hyderabad", "Panaji", "Mumbai", "Thiruvananthapuram", "Jaipur",
-            "Lucknow", "New Delhi", "Shimla", "leh", "Patna", "Raipur", "Kolkata", "Kohima",
+            "Lucknow", "New Delhi", "Shimla", "Leh", "Patna", "Raipur", "Kolkata", "Kohima",
             "Agartala", "Dispur", "Gandhinagar","Chandigarh", "Dehra dun", "Srinagar", "Bhopal",
             "Amaravati", "Ranchi", "Aizwal", "Imphal", "Shillong"
         };
@@ -31,8 +31,55 @@ namespace FirstConsoleApp
         internal static void Test()
         {
             // BasicQueries(); 
-            ProjectionOperator(); 
-            RestrictionQueries();
+            //ProjectionOperator(); 
+            //RestrictionQueries();
+            //SortingQueries();
+            AggregationQueries();
+            GroupingQueries();
+        }
+        static void GroupingQueries()
+        {
+            var q1 = from c in cities 
+                     orderby c 
+                     group c by c[0] into g 
+                     select g;
+            foreach (var group in q1)
+            {
+                PrintList(group.ToList(), $"{counter++} Key: {group.Key}" );
+            }
+            var q2 = cities
+                .OrderBy(c=>c.Length)
+                .GroupBy(g => g.Length)
+                .Select(c => c);
+            foreach (var group in q2)
+            {
+                PrintList(group.ToList(), $"{counter++} Length Key: {group.Key}");
+            }
+        }
+        static void AggregationQueries()
+        {
+            var count = cities.Count(); 
+            var sum = cities.Sum(c=>c.Length);
+            var min = cities.Min(c=>c.Length);
+            var max = cities.Max(c=>c.Length);
+            var avg = cities.Average(c=>c.Length);
+            WriteLine($"Count:{count}, Sum:{sum}, Min:{min}, Max:{max}, Avg: {avg}");
+
+        }
+        static void SortingQueries()
+        {
+            //OrderBy, ThenBy, OrderByDescending, ThenByDescending
+            var q1 = from c in cities
+                     where c.Length> 8
+                     orderby c[0] descending, c[1] ascending
+                     select c;
+            var q2 = cities
+                .Where(c=>c.Length> 8)
+                .OrderBy(c => c[0])
+                .ThenByDescending(c => c[1])
+                .Select(c => c);
+            PrintList(q1, $"{counter++} Ordered by first descending and second ascending letters");
+            PrintList(q2, $"{counter++} Ordered by first ascending and second descending letters");
         }
         static void RestrictionQueries()
         {
