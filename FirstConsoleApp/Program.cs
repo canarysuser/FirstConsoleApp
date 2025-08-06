@@ -40,7 +40,7 @@
                 Console.WriteLine($"Power: {power}");
             }*/
 
-            WorkingWithDelegates1.Test();
+            WorkingWithDelegates2.Test();
 
 
         }
