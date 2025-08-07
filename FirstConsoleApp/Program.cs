@@ -44,7 +44,10 @@
             //BuiltInDelegates.Test();
             //LINQOperators.Test();
             //WorkingWithReflection.Test();
-            WorkingWithReflection.TestDynamicAssembly();
+            // WorkingWithReflection.TestDynamicAssembly();
+            //ThreadExamples1.Test();
+            //Synchronization.Test();
+            ResetEventExample.Test();
         }
         static IEnumerable<int> Power(int num, int multiplier)
         {
