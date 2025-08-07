@@ -1,0 +1,92 @@
+Reflection
+-- querying the types and extract type information 
+-- dynamically load a type, instantiate and invoke members 
+-- dynamically create an assembly - at runtime - specifying the IL Opcodes 
+-- Core class which supports this operations -> System.Type -> Metaclass in .NET 
+-- has classes like ConstructorInfo, MethodInfo, PropertyInfo, MemberInfo
+--> System.Reflection namespace 
+--> System.Reflection.Emit namespace - dynamically creating assemblies 
+
+
+Multi-Threading 
+- Threads are light-weight process 
+- Allocated time slices by the OS Scheduler 
+- Threads are created and managed by the OS 
+- Thread Lifecycle -> Created -> Runnable(ReadyState) -> Runs -> WaitSleepJoin -> Runnable(ReadyState)
+							      -> Exited  -> Exit 
+							      -> AbortRequested -> Aborted -> Exit
+-- System.Threading namespace defines the System.Threading.Thread class 
+-- represents the physical OS thread (ref-ref-smartref-threadobj)
+-- The OS creates the physical thread when the application wants to start/begin the exection, not when the Thread object is created.
+-- time slices allocated by the OS - guarantee the execution sequence 
+-- Guaranteed to run in a chaotic pattern 
+-- Thread operations can be synchronized or sequentialized and make them inter-dependent also.
+-- ThreadPriority -> 1-5 => Lowest, BelowNormal, Normal, AboveNormal, Highest 
+-- All .NET Threads are foreground -> blocks the main thread from termination as along as spawned threads are running ] 
+-- Threads can be run in background -> main thread is not blocked, the spawned thread can be terminated when the main thread terminates. 
+-- Executes a task (function) 
+-- assign functions to the thread -> use ThreadStart/ParameterizedThreadStart delegates 
+
+
+Synchronization Primitives 
+1. Object Access Level 
+	- lock the object and sync access to the object 
+	- Interlocked class allows locking and unlocking of Value types 
+	- lock(object) {} can be used to lock any objects
+	- Monitor sync primitive allows locking of objects(reference types) 
+	- LockObject can be used to handle the locking 
+	- lock() and Monitor primitive are same. 
+2. Process Level Sync 
+	- Critical sections across processes or within a process. 
+	- Mutex and Semaphore 
+	- Mutex - no concurrency 
+	- Semaphore - allows controlled concurrency 
+	- Unnamed Mutex/Sem -> accessible within the declaring process 
+	- Named Mtx/Sem -> system-wide and can be accessed from other processes in the system. 
+3. Method Level Sync 
+	- using the MethodImplAttribute on the target method 
+	- CLR ensures that only one thread executed/invokes the method
+4. Thread-level Sync 
+	- sync operations across threads, where one can wait to receive a signal from another thread 
+	- ResetEvents in .NET like AutoResetEvent (signalled multiple times) and ManualResetEvent (one) 
+	
+
+
+Parallel Programming 
+-- divide the functionality into smaller number of tasks based on the number of cores(CPUs) 
+	-- creates a background thread for each of the sub task
+	-- schedules the tasks to run on the CPUs at the same point in time
+	-- pre-empts the existing process running on the CPUs,
+	-- executes all the sub-tasks simultaneously across all the CPUs at the same point in time
+	-- collates the results back after executions 
+	-- return the collated result set to the application 
+
+-> 10,00,000 iterations 
+	-> one thread would execute all the 10Lakh iterations 
+-> 10,00,000 iterations in parallel 
+	-> subtasking the task into 8 sub tasks (1 for each CPU) 
+	-> 10,00,000/8 -> each sub task will run for 1,25,000 iterations
+--> ConcurrentStack<T>, ConcurrentQueue<T>, ConcurrentBag<T>, ConcurrentDictionary<T> 
+
+-- System.Threading.Tasks 
+--> Task Parallel Library (TPL) 
+--> Data Parallel Library (PLinq)  --> collection.AsParallel()
+
+Task class 
+- represents a unit of work
+- UoW has a associated background thread retrieved from the CLR ThreadPool. 
+- 
+Parallel class 
+- built-in implementation for creating individual tasks and executing the tasks. 
+- Invoke, For, Foreach are some methods on the Parallel class. 
+
+async - await 
+
+
+
+
+
+
+
+
+

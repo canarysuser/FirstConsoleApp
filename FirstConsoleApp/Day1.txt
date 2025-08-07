@@ -1,0 +1,219 @@
+1. Extension Methods 
+2. yield statement and IEnumerable/IEnumerator interfaces
+3. Lambda Expressions
+4. LINQ Operators 
+5. Reflection 
+6. Multi-threading and Parallel programming 
+7. Managed Extensibility Framework (MEF) 
+8. Delegates and Events and Built_in Delegates 
+
+
+1. Extension Methods 
+String class - 2003 v1.1 --> 2025 v4.8.x
+	     -> newer functionalities have been added 
+--> add functionalities without modifying the original class. 
+--> 
+Utilities.CheckValidEmail(string); 
+string.CheckValidEmail(); 
+
+obj.DoWork() ==> DoWork(MyClass this) { this.X=10;}
+
+	     
+2. IEnumerable -> IEnumerator GetEnumerator() 
+   IEnumerator -> bool MoveNext(), object Current, void Reset()
+
+   
+   public List<string> GetList() { 
+	List<string> strList = new List<string>(); 
+	strList.Add("1"); strlist.add("2"); 
+	return strList; 
+   } 
+
+   foreach(var str in GetList()) { ..... } 
+
+   public IEnumerable<string> GetList() { 
+	for(int i=1; i<10; i++) 
+		yield return i.ToString(); 
+   }
+
+ foreach(var str in GetList()) { 1,2,3,4,5,......} 
+
+
+   IEnumerator ie = strList.GetEnumerator(); 
+   while(ie.MoveNext() ) { 
+	string str = ie.Current.ToString(); 
+	...... 
+   } 
+
+--> yield -> simplify the creation of enumerators - returns elements one at a time, avoid building the collection upfront. 
+
+
+3. Delegates and Events 
+
+void SorterInsertionSort(int[] arr) { 
+	CleaningTheArray(); 
+	RemovingNulls(); 
+	InsertionSort(); 
+	RemoveDuplicates();
+} 
+void SorterQuickSort(int[] arr) { 
+	CleaningTheArray(); 
+	RemovingNulls(); 
+	QuickSort(); 
+	RemoveDuplicates();
+}
+
+void Sorter(int[] arr, (algo *) () ) { 
+	CleaningTheArray(); 
+	RemovingNulls(); 
+	algo(); 
+	RemoveDuplicates();
+}
+
+-- function pointers stores the address of the target functions 
+-- first class object - can be passed as argument to another function 
+-- System.Delegate - function pointer in .NET 
+-- deferred execution - dynamic polymorphism - late binding 
+-- the target function should match with the delegate signature 
+-- faster execution of the functions 
+-- create a list of invocable functions and invoke them sequentially 
+-- --> System.MulticastDelegate inherits from System.Delegate 
+-- 3 steps for delegates 
+	1. Declaration 	
+	--> declared like a function 
+	public delegate <returnType> <Identifier> ([<arg_list>]); 
+	public delegate void MyDelegate (string arg); 
+==> Compiler converts the above line into a class declaration 
+	public class MyDelegate : System.MulticastDelegate 
+	{
+		public ctor(Object object, Native IntPtr) {....}
+		public void Invoke(string arg) { .... } 
+		public IAsyncResult BeginInvoke(string arg, AsyncCallback cb, object state) {....} 
+		public void EndInvoke(IAsyncResult iar) {..} 
+	}
+--> Signature of the Delegate -->  void target(string) ==> [visibility] [static|instance] void DoWork(string a){...}
+
+	2. Instantiation 
+	--> create an instance of the delegate by passing the address of the target function 
+	--> to get the address-use the function name without the paranthesis 
+		-> instructs the CLR to load the function using LDFTN IL instruction, instead CALL, CALLVIRT instruction
+	static void Print(string a) { .... } 
+	MyDelegate a = new MyDelegate(Print); 
+	==> new Delegate(null, &Print )
+	void Print(string a) {... } 
+	Class c1 = new Class(); 
+	==> new Delegate(c1, &c1.Print)
+
+
+	3. Invocation 
+	--> call/invoke the delegate 
+	--> can be invoked like a function ==> a("10"); 	==> Compiler converts to a.Invoke("10")
+	--> can be invoked like a object member => a.Invoke("10"); 
+
+class A { 
+	B b = new B(); 
+	Delegate d; 
+	void DoWork() { ..... d.Invoke(); ..... } 
+	void DoWork1() { ..... b.Execute....(); ..... } 
+} 
+
+class B { 
+	void ExecuteBasedOnNotification(){ ... } 
+}
+
+class Map{ A a = new A(); a.d = new Delegate(new B().Execute);
+
+	Button b1 = new Button(); 
+	Button b2 = new Button(); 
+	Form1 f1 = new Form(); 
+	Form f2 = new Form(); 
+	
+	b1.Click = new Delegate(f1.HandleClick); 
+	b2.Click = new Delegate(f1.HandleClick); 
+
+	void HandleClick(object sender) { if (sender is Button1) { .... } else if sender is Button2 { .... } } 
+
+	b1.Click = new Delegate(f1.HandleClick); 
+	b2.Click = new Delegate(f2.HandleClick); 
+
+	b1.Click = new Delegate(f1.HandleB1Click); 
+	b2.Click = new Delegate(f1.HandleB2Click); 
+
+	b1.Click = new Delegate(f1.HandleClick); 
+	b1.Click += new Delegate(f2.HandleClick); 
+	b1.Click.Invoke(); 
+
+Event Delegation Model 
+--> Event is a notification of an action 
+--> public delegate void DelegateName(object sender, EventArgs e) 
+--> EventArgs - Event data class 
+--> Pub-Sub Model 
+--> Publisher raises notifications as and when certain tasks are completed. 
+--> Subscribers subscribe/register to get the notifications with the delegate/distributor 
+
+BUilt-In delegate 
+- WPF/Winforms/ASP.NET => public delegate void EventHandler(object sender, EventArgs e); 
+- WPF => public delegate void RoutedEventHandler(object sender, RoutedEventArgs e); 
+
+-- Action | Action<T,...>  => used to invoke functions which return void and can take 0-n parameters 
+-- Func<TResult> => used to invoke functions which returns a value 
+-- Func<T1, T2,.... TResult> => used to invoke functions which returns a value and takes n parameters 
+-- Predicate<TInput> => returns a bool flag based on the input value 
+
+
+
+
+LINQ 
+-- based on extension methods, inheritance, interfaces, generics, delegates, lambda expression, 
+-- Language Integrated Query 
+-- common way of querying different types of collections 
+	-> .NET Object based collections - LIsts, Stack, Queue, Hashtables, HashSet, Dictionary.... 
+	-> DOM based collections [ HTML ] 
+	-> XML based collection [ Custom Elements ] 
+	-> Database SQL based collection [ SQL ] 
+
+from item in collection select item; 
+-> Object based => from item in listCollection select item; 
+-> Database based => from item in DBCollection select item; // ORM utilities 
+-> XML based => from item in XElement(..) select item; 
+
+--> LINQ To Objects 
+--> LINQ to XML
+--> LINQ to SQL
+
+
+Query - Based Syntax 
+	-> from x in collection where criteria order by x.field descending select x; 
+	-> deferred execution - actually created and invoked when it is called using foreach 
+	-> have limitations, not everything can be done using this.
+	-> aggregation functions cannot be used here. 
+	-> (from item in items select item).Sum(c=>c.Field); 
+
+Method - based Syntax 
+	-> collection.Where(criteria).OrderBy(sortingCriteria).Select(selectionCriteria); 
+	-> immediate execution 
+	-> items.Sum(c=>c.Field); 
+
+
+LINQ Operators 
+1. Projection Operators -> Select, SelectMany ... 
+2. Restriction Operators -> While 
+3. Sorting Operators -> OrderBy, ThenBy, OrderByDescending, ThenByDescending 
+4. Partition Operators -> Take, Skip, TakeWhile, SkipWhile 
+5. Element Operators -> First, Last, ElementAt, FirstOrDefault, LastOrDefault, ElementAtOrDefault... 
+6. Aggregation OPerators -> Count, Sum, Mix, Max, Average 
+7. Grouping Operators - . GroupBy 
+8. Conversion Operators -> Cast, ToList, ToArray, ToDictionary..... 
+9. Quantifiers Operators -> Any, All, Contains 
+
+
+
+
+
+
+
+
+
+
+
+
