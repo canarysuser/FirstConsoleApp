@@ -47,7 +47,8 @@
             // WorkingWithReflection.TestDynamicAssembly();
             //ThreadExamples1.Test();
             //Synchronization.Test();
-            ResetEventExample.Test();
+            //ResetEventExample.Test();
+            TaskProgramming.TestTasks();
         }
         static IEnumerable<int> Power(int num, int multiplier)
         {
