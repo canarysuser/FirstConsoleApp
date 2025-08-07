@@ -1,4 +1,6 @@
-﻿namespace FirstConsoleApp
+﻿using System.Threading.Tasks;
+
+namespace FirstConsoleApp
 {
     public static class ViewModelExtensions
     {
@@ -18,7 +20,7 @@
     }*/
     public class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             /*Program program = new Program();
             program.DoWork(); 
@@ -48,7 +50,9 @@
             //ThreadExamples1.Test();
             //Synchronization.Test();
             //ResetEventExample.Test();
-            TaskProgramming.TestTasks();
+            // TaskProgramming.TestTasks();
+            //await TaskProgramming.TestAsync();
+            MEFClient.Test();
         }
         static IEnumerable<int> Power(int num, int multiplier)
         {

@@ -10,6 +10,27 @@ namespace FirstConsoleApp
 {
     internal class TaskProgramming
     {
+        internal async static Task TestAsync()
+        {
+            Console.WriteLine("Before calling GetData()");
+           // var t1 = GetDataAsync("ABB");
+            Console.WriteLine("Task created... Waiting for results");
+            //var result = t1.Result; //Blocks the main thread 
+            var result = await GetDataAsync("Abb"); //Method execution is paused.
+            Console.WriteLine("Result is {0}", result);
+        }
+        internal async static Task<string> GetDataAsync(string input)
+        {
+            var output = string.Empty;
+            if (!string.IsNullOrEmpty(input))
+            {
+                output = $"Input value was {input}";
+            }
+            await Task.Delay(2000); 
+            return output;
+        }
+
+
         internal static void TestTasks()
         {
             Task t1 = new Task(() =>
