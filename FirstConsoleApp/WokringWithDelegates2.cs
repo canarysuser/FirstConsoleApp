@@ -48,6 +48,10 @@ namespace FirstConsoleApp
 
     internal class WorkingWithDelegates2
     {
+        public WorkingWithDelegates2()
+        {
+            Console.WriteLine($"{nameof(WorkingWithDelegates2)}.ctor() invoked.");
+        }
 
         internal static void Test()
         {

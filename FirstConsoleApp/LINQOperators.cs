@@ -50,11 +50,15 @@ namespace FirstConsoleApp
             //cities.Where(c=>c.ToLower()=="shimla" || c.Length>10);
             ParameterExpression pe = Expression.Parameter(typeof(string), "c");
             Expression left = Expression.Call(pe, typeof(string).GetMethod("ToLower", Type.EmptyTypes));
-            Expression right = Expression.Constant("shimla");
+            Write("Filter by City: ");
+            string city = Console.ReadLine(); 
+            Expression right = Expression.Constant(city);
             Expression e1 = Expression.Equal(left, right);
 
             left = Expression.Property(pe, typeof(string).GetProperty("Length"));
-            right = Expression.Constant(10, typeof(int));
+            Write("Enter desired length: ");
+            int.TryParse(Console.ReadLine(), out int length);
+            right = Expression.Constant(length, typeof(int));
             Expression e2 = Expression.GreaterThan(left, right);
             Expression predicateBody = Expression.OrElse(e1, e2);
             MethodCallExpression whereCallExpression = Expression.Call(

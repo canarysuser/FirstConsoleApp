@@ -12,6 +12,10 @@ namespace FirstConsoleApp
 
     public class WorkingWithDelegates1
     {
+        public WorkingWithDelegates1()
+        {
+            Console.WriteLine($"{nameof(WorkingWithDelegates1)}.ctor() invoked.");
+        }
         //2: Create a method that matches the delegate signature
         public static int Add(int x, int y) => x + y;
         public int Subtract(int x, int y) => x - y;
